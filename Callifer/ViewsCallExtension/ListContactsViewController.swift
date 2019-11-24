@@ -38,7 +38,7 @@ class ListContactsViewController: UIViewController {
         
         contactManager.setContacts()
         
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.darkGray
         
         let buttonDone = UIBarButtonItem.init(barButtonSystemItem: .done, target: self, action: #selector(save))
         let buttonEditName = UIBarButtonItem.init(title: "edit name", style: .plain, target: self, action: #selector(editName))
@@ -46,10 +46,12 @@ class ListContactsViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = buttonEditName
         self.navigationItem.rightBarButtonItem = buttonDone
         self.navigationItem.hidesBackButton = true
+        self.navigationController?.navigationBar.barTintColor = .darkGray
         
         list.register(ContactTableViewCell.self, forCellReuseIdentifier: "cellcontact")
         list.translatesAutoresizingMaskIntoConstraints = false
         list.allowsMultipleSelection = true
+        list.backgroundColor = .darkGray
         list.delegate = self
         list.dataSource = self
         
@@ -124,7 +126,7 @@ extension ListContactsViewController: UITableViewDataSource {
         let dataForList = contactManager.getContact(for: indexPath.row)
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellcontact") as! ContactTableViewCell
-        
+       
         if dataForList.1 {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         } else {

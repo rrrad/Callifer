@@ -16,6 +16,7 @@ class ContactTableViewCell: UITableViewCell {
         label.textAlignment = .left
         let font = UIFont.boldSystemFont(ofSize: 14)
         label.font = font
+        label.textColor = .white
         return label
     }()
     
@@ -36,6 +37,7 @@ class ContactTableViewCell: UITableViewCell {
         label.textAlignment = .right
         let font = UIFont.systemFont(ofSize: 14.0)
         label.font = font
+        label.textColor = .white
         return label
     }()
     
@@ -43,7 +45,7 @@ class ContactTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+        backgroundColor = .darkGray
         contentView.addSubview(numberLabel)
         contentView.addSubview(nameLabel)
         contentView.addSubview(nameDescriptionLabel)

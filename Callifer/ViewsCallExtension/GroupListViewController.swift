@@ -20,8 +20,8 @@ class GroupeListViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         self.groupCollection = UICollectionView.init(frame: .zero, collectionViewLayout: layout)
        
-        view.backgroundColor = .yellow
-        groupCollection.backgroundColor = .yellow
+        view.backgroundColor = .darkGray
+        groupCollection.backgroundColor = .darkGray
         groupCollection.register(GroupeCollectionViewCell.self, forCellWithReuseIdentifier: "colcell")
         groupCollection.translatesAutoresizingMaskIntoConstraints = false
         groupCollection.delegate = self
@@ -108,7 +108,7 @@ extension GroupeListViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "colcell", for: indexPath) as! GroupeCollectionViewCell
         if indexPath.row == groupManager.getCountGroup() {
             cell.setTitle(title: "+")
-            cell.backgroundColor = .orange
+            cell.backgroundColor = .gray
         } else {
             let group = groupManager.getDataForCell(indexPath.row)
             cell.setTitle(title: group.0.name)
@@ -117,13 +117,14 @@ extension GroupeListViewController: UICollectionViewDataSource {
                 cell.backgroundColor = .red
                 setBadge(set: true)
             } else {
-                cell.backgroundColor = .orange
+                cell.backgroundColor = .gray
                 setBadge(set: false)
             }
         }
         
         cell.layer.cornerRadius = 10
         cell.layer.borderWidth = 3
+        cell.layer.borderColor = UIColor.white.cgColor
 
         return cell
     }

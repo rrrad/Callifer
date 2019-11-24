@@ -16,7 +16,7 @@ class GroupeCollectionViewCell: UICollectionViewCell {
         let label = UILabel.init(frame: .zero)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        //label.backgroundColor = .orange
+        label.textColor = .white
         return label
     }()
     
@@ -38,7 +38,7 @@ class GroupeCollectionViewCell: UICollectionViewCell {
     
     func setTitle(title: String) {
         if title == "+" {
-            label.font = UIFont.boldSystemFont(ofSize: 23)
+            label.font = UIFont.boldSystemFont(ofSize: 50)
         } else {
             label.font = UIFont.systemFont(ofSize: 14)
         }
