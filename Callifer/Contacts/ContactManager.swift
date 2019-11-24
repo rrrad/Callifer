@@ -9,7 +9,7 @@
 import Foundation
 import Contacts
 
-class ContactManager{
+final class ContactManager{
     private var idcm: String
     let userDefault = UserDefaults.standard
     
@@ -21,7 +21,8 @@ class ContactManager{
     private var choiseContact = [Contact]()
 
     var contactsDidChange: (() -> Void)?
-    
+    var errorMessage: ((String) -> Void)?
+
     init(idcm: String) {
         self.idcm = idcm
         auth = AppDelegate.shared.contactAuth
@@ -32,15 +33,20 @@ class ContactManager{
 
     
     func setContacts() {
-        guard auth == true else { return }
+        guard auth == true else {
+            if errorMessage != nil {
+                errorMessage!(" необходимо разрешить доступ к контактам Настройки > Callifer > Контакты")
+            }
+            return
+        }
         let toFetch = [CNContactPhoneNumbersKey as NSString,
                        CNContactGivenNameKey as NSString,
                        CNContactFamilyNameKey as NSString]
         var allContainer: [CNContainer] = []
         do {
             allContainer = try contactStore.containers(matching: nil)
-        } catch let err {
-            print("Container Contact", err)
+        } catch {
+            
         }
         var allContact: [CNContact] = []
         for container in allContainer {
@@ -49,8 +55,8 @@ class ContactManager{
             do {
                 let resInContainer = try contactStore.unifiedContacts(matching: predicate, keysToFetch: toFetch)
                 allContact.append(contentsOf: resInContainer)
-            } catch let err {
-                print("ALL Contact", err)
+            } catch {
+               
             }
         }
         
@@ -87,9 +93,9 @@ class ContactManager{
     //взять выбранные контакты для данной группы и UserDefault
     func setChoiseContact() {
         do {
-            choiseContact = try userDefault.getObject(for: idcm)
-        } catch let error {
-            print("UserDefault get choise contact", error)
+            choiseContact = try userDefault.getArrayObjects(for: idcm)
+        } catch {
+            
         }
     }
     
@@ -110,8 +116,8 @@ class ContactManager{
     func saveChois() {
         do {
         try userDefault.saveObject(object: choiseContact, for: idcm)
-        } catch let error {
-            print("UserDefault save choise contact", error)
+        } catch {
+            
         }
     }
 }

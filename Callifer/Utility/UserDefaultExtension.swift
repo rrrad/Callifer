@@ -14,7 +14,14 @@ extension UserDefaults {
         case notData
     }
     
-    func getObject<S: Codable>(for key: String)throws -> [S]{
+    func getObject<S: Codable>(for key: String)throws -> S{
+        guard let res = self.object(forKey: key) as? Data else { throw UserDefaultExtensionError.notData }
+        
+        let respons = try JSONDecoder().decode(S.self, from: res)
+        return respons
+    }
+    
+    func getArrayObjects<S: Codable>(for key: String)throws -> [S]{
         guard let res = self.object(forKey: key) as? Data else { throw UserDefaultExtensionError.notData }
         
         let respons = try JSONDecoder().decode([S].self, from: res)

@@ -13,15 +13,15 @@ func configureAudioSession() {
    
     do {
        try session.setCategory(.playAndRecord, mode: .voiceChat, options: [])
-    } catch (let error) {
-        print("audioSession error \(error)")
+    } catch {
+        
     }
 }
 
 func playAudio() {
-    print("playAudio")
+    
 }
 
 func stopAudio() {
-    print("stopAudio")
+   
 }

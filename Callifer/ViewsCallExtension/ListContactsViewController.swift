@@ -26,10 +26,16 @@ class ListContactsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         contactManager.contactsDidChange = {[weak self] in
             guard let self = self else { return }
             self.list.reloadData()
         }
+        
+        contactManager.errorMessage = { [weak self] (text) in
+            self?.showAlert(text:text)
+        }
+        
         contactManager.setContacts()
         
         view.backgroundColor = UIColor.white
@@ -40,7 +46,6 @@ class ListContactsViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = buttonEditName
         self.navigationItem.rightBarButtonItem = buttonDone
         self.navigationItem.hidesBackButton = true
-        self.navigationController?.hidesBarsOnTap = false
         
         list.register(ContactTableViewCell.self, forCellReuseIdentifier: "cellcontact")
         list.translatesAutoresizingMaskIntoConstraints = false
@@ -49,6 +54,12 @@ class ListContactsViewController: UIViewController {
         list.dataSource = self
         
         view.addSubview(list)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super .viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+
     }
 
     override func viewDidLayoutSubviews() {
@@ -128,5 +139,16 @@ extension ListContactsViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         
+    }
+}
+
+extension ListContactsViewController {
+    func showAlert(text: String) {
+        let alert = UIAlertController.init(title: "", message: text, preferredStyle: .alert)
+        let action = UIAlertAction.init(title: "OK", style: .cancel, handler: nil)
+        alert.addAction(action)
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }

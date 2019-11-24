@@ -16,6 +16,7 @@ class GroupeListViewController: UIViewController {
     
     override func viewDidLoad() {
         super .viewDidLoad()
+
         let layout = UICollectionViewFlowLayout()
         self.groupCollection = UICollectionView.init(frame: .zero, collectionViewLayout: layout)
        
@@ -33,6 +34,13 @@ class GroupeListViewController: UIViewController {
             }
         }
         
+        groupManager.errorMessage = { [weak self] (text) in
+            DispatchQueue.main.async {
+                self?.showAlert(text:text)
+            }
+        }
+        
+        
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 20.0
         let itemSize = CGSize.init(width: view.bounds.width/3, height: view.bounds.height/5)
@@ -40,6 +48,13 @@ class GroupeListViewController: UIViewController {
         layout.minimumLineSpacing = 20
         layout.sectionInset = UIEdgeInsets.init(top: 30, left: 30, bottom: 30, right: 30)
         view.addSubview(groupCollection)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super .viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+        groupManager.getBlockGroup()
+
     }
     
     override func viewDidLayoutSubviews() {
@@ -55,6 +70,15 @@ class GroupeListViewController: UIViewController {
         groupCollection.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0.0).isActive = true
         groupCollection.topAnchor.constraint(equalTo: view.topAnchor, constant: safeArea).isActive =  true
     }
+    
+    func setBadge(set: Bool) {
+        if set {
+            UIApplication.shared.applicationIconBadgeNumber = 1
+        } else {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        }
+        
+    }
 }
 
 extension GroupeListViewController: UICollectionViewDelegate {
@@ -66,7 +90,7 @@ extension GroupeListViewController: UICollectionViewDelegate {
             self.navigationController?.pushViewController(vc, animated: true)
             collectionView.deselectItem(at: indexPath, animated: true)
         } else {
-            let group = groupManager.getDataForCell(indexPath.row)
+            let group = groupManager.getDataForCell(indexPath.row).0
             showMenuAction(for: group, with: indexPath.row)
             collectionView.deselectItem(at: indexPath, animated: true)
         }
@@ -84,14 +108,21 @@ extension GroupeListViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "colcell", for: indexPath) as! GroupeCollectionViewCell
         if indexPath.row == groupManager.getCountGroup() {
             cell.setTitle(title: "+")
-            
+            cell.backgroundColor = .orange
         } else {
             let group = groupManager.getDataForCell(indexPath.row)
-            cell.setTitle(title: group.name)
+            cell.setTitle(title: group.0.name)
             
+            if group.1 == true {
+                cell.backgroundColor = .red
+                setBadge(set: true)
+            } else {
+                cell.backgroundColor = .orange
+                setBadge(set: false)
+            }
         }
-        cell.backgroundColor = .orange
-        cell.layer.cornerRadius = 5
+        
+        cell.layer.cornerRadius = 10
         cell.layer.borderWidth = 3
 
         return cell
@@ -134,5 +165,16 @@ extension GroupeListViewController {
         alert.addAction(cancel)
         alert.preferredAction = on
         self.present(alert, animated: true, completion: nil)
+    }
+}
+
+extension GroupeListViewController {
+    func showAlert(text: String) {
+        let alert = UIAlertController.init(title: "", message: text, preferredStyle: .alert)
+        let action = UIAlertAction.init(title: "OK", style: .cancel, handler: nil)
+        alert.addAction(action)
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }

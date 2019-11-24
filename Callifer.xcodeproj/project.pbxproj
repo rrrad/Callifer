@@ -130,7 +130,7 @@
 				863528892374343D00DA1DD1 /* ViewsCall */,
 				8639802A237F1EE500B66A96 /* Contacts */,
 				8688783F23857FE20079B9A1 /* Utility */,
-				863528A12377086300DA1DD1 /* ViewsCallDirrectory */,
+				863528A12377086300DA1DD1 /* ViewsCallExtension */,
 				8635287A237318A100DA1DD1 /* Assets.xcassets */,
 				8635287C237318A100DA1DD1 /* LaunchScreen.storyboard */,
 				8635287F237318A100DA1DD1 /* Info.plist */,
@@ -167,7 +167,7 @@
 			path = CalliferDirrectory;
 			sourceTree = "<group>";
 		};
-		863528A12377086300DA1DD1 /* ViewsCallDirrectory */ = {
+		863528A12377086300DA1DD1 /* ViewsCallExtension */ = {
 			isa = PBXGroup;
 			children = (
 				86398028237F1D7300B66A96 /* ListContactsViewController.swift */,
@@ -175,7 +175,7 @@
 				863980332381372C00B66A96 /* GroupListViewController.swift */,
 				867A5CC32381843000CEE70C /* GroupeCollectionViewCell.swift */,
 			);
-			path = ViewsCallDirrectory;
+			path = ViewsCallExtension;
 			sourceTree = "<group>";
 		};
 		8639802A237F1EE500B66A96 /* Contacts */ = {

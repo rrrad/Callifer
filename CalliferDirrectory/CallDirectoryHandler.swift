@@ -29,7 +29,6 @@ class CallDirectoryHandler: CXCallDirectoryProvider {
         if let array = userDefault?.object(forKey: "numberForDir") as? Array<Int64>  {
             numberExcept = array
         }
-        print("delete", deleteBlock, numberExcept)
         
         numberBlock = getContacts(numberExcept)
         
@@ -47,14 +46,12 @@ class CallDirectoryHandler: CXCallDirectoryProvider {
     private func deleteAllBlocking(context: CXCallDirectoryExtensionContext) {
         context.removeAllBlockingEntries()
         context.removeAllIdentificationEntries()
-        print("delete all blocking")
     }
     
     private func addAllBlockingPhoneNumbers(to context: CXCallDirectoryExtensionContext) {
         
         for phoneNumber in numberBlock {
             context.addBlockingEntry(withNextSequentialPhoneNumber: phoneNumber)
-            print("add", phoneNumber)
         }
     }
 
@@ -71,8 +68,8 @@ class CallDirectoryHandler: CXCallDirectoryProvider {
         var allContainer: [CNContainer] = []
         do {
             allContainer = try contactStore.containers(matching: nil)
-        } catch let err {
-            print(err)
+        } catch {
+        
         }
         var allContact: [CNContact] = []
         for container in allContainer {
@@ -81,8 +78,8 @@ class CallDirectoryHandler: CXCallDirectoryProvider {
             do {
                 let resInContainer = try contactStore.unifiedContacts(matching: predicate, keysToFetch: toFetching)
                 allContact.append(contentsOf: resInContainer)
-            } catch let err {
-                print(err)
+            } catch {
+                
             }
         }
         

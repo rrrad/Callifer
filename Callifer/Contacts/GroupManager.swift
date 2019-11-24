@@ -10,18 +10,21 @@ import Foundation
 import  CallKit
 
 struct Group: Codable {
+    
     var name: String
     let idcm: String //по этому идентификатору сохраняются выбранные контакты для этой группы в userDefault
 }
 
-class GroupeManager {
+final class GroupeManager {
     private let userDefault = UserDefaults.init(suiteName: "group.Callifer")
     private let standartUserDefault = UserDefaults.standard
     private let callDirrectoryManager = CXCallDirectoryManager.sharedInstance
+    private(set) var groupeIsBloked: Group? = nil
     
     private var data: [Group] = []
     
     var dataSoursDidChange: (() -> Void)?
+    var errorMessage: ((String) -> Void)?
     
     init() {
         getAllGroup()
@@ -33,9 +36,9 @@ class GroupeManager {
         let key = "numberForDir"
         var arr:[Contact] = []
         do {
-           arr = try standartUserDefault.getObject(for: group.idcm)
-        } catch let error {
-            print("USER Default", error)
+           arr = try standartUserDefault.getArrayObjects(for: group.idcm)
+        } catch{
+
         }
         
         
@@ -55,8 +58,16 @@ class GroupeManager {
         
         userDefault?.set(resArray, forKey: key)
         userDefault?.set(22, forKey: "delete") // 22 добавлять
-        callDirrectoryManager.reloadExtension(withIdentifier: "com.jerardev.Callifer.CalliferDirrectory") { (err) in
-            print("ON Block", err)
+        callDirrectoryManager.reloadExtension(withIdentifier: "com.jerardev.Callifer.CalliferDirrectory") {[weak self] (err) in
+            if err != nil {
+                if self?.errorMessage != nil {
+                    self?.errorMessage!("расширение выключено в Настройки > Телефон > Блок.и идентиф.вызова > Callifer ")
+                }
+                
+            } else {
+                self?.saveOrRemoveActionBlock(group: group)
+                self?.refrechData()
+            }
         }
     }
     
@@ -64,8 +75,24 @@ class GroupeManager {
     
     func offBlock() {
         userDefault?.set(33, forKey: "delete") // 33 не добавлять
-        callDirrectoryManager.reloadExtension(withIdentifier: "com.jerardev.Callifer.CalliferDirrectory") { (err) in
-            print("OFF Block", err)
+        callDirrectoryManager.reloadExtension(withIdentifier: "com.jerardev.Callifer.CalliferDirrectory") { [weak self] (err) in
+            if err != nil {
+                if self?.errorMessage != nil {
+                    self?.errorMessage!("расширение выключено в Настройки > Телефон > Блок.и идентиф.вызова > Callifer ")
+                }
+            } else {
+                self?.saveOrRemoveActionBlock(group: nil)
+                self?.refrechData()
+            }
+        }
+    }
+    
+    private func saveOrRemoveActionBlock(group: Group?) {
+        groupeIsBloked = group
+        if let g = group{
+            try? standartUserDefault.saveObject(object: g, for: "groupeIsBlocked")
+        } else {
+            standartUserDefault.removeObject(forKey: "groupeIsBlocked")
         }
     }
     
@@ -110,18 +137,26 @@ class GroupeManager {
     // получить список всех групп
     func getAllGroup() {
         do {
-            data = try standartUserDefault.getObject(for: "allgroups")
-        } catch let error {
-            print("GET", error)
+            data = try standartUserDefault.getArrayObjects(for: "allgroups")
+        } catch {
+            
         }
     }
+    
+    func getBlockGroup() {
+           do {
+               groupeIsBloked = try standartUserDefault.getObject(for: "groupeIsBlocked")
+           } catch {
+               
+           }
+       }
     
     // сoхранить список всех групп
     func saveAllGroup() {
         do {
             try standartUserDefault.saveObject(object: data, for: "allgroups")
-        } catch let error {
-            print("SAVE", error)
+        } catch {
+        
         }
         
     }
@@ -132,7 +167,13 @@ class GroupeManager {
         return data.count
     }
     
-    func getDataForCell(_ index: Int) -> Group{
-        return data[index]
+    func getDataForCell(_ index: Int) -> (group: Group, isSelect: Bool){
+        let g = data[index]
+        
+        if let gb = self.groupeIsBloked, gb.idcm == g.idcm {
+            return (g, true)
+        } else {
+           return (g, false)
+        }
     }
 }

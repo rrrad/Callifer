@@ -28,6 +28,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             } 
         }
         
+        UNUserNotificationCenter.current().requestAuthorization(options: .badge) { (_, _) in
+            
+        }
+        
         providerDelegate = ProviderDelegate.init(callManager: callManager)
         
         window = UIWindow.init(frame: UIScreen.main.bounds)
