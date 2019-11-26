@@ -126,6 +126,10 @@ extension ListContactsViewController: UITableViewDataSource {
         let dataForList = contactManager.getContact(for: indexPath.row)
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellcontact") as! ContactTableViewCell
+        
+        let backView = UIView()
+        backView.backgroundColor = .orange
+        cell.selectedBackgroundView = backView
        
         if dataForList.1 {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
