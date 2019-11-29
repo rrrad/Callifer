@@ -18,7 +18,7 @@ func configureAudioSession() {
     }
 }
 
-func playAudio() {
+func startAudio() {
     
 }
 

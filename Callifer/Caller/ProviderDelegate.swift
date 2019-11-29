@@ -10,7 +10,7 @@ import Foundation
 import CallKit
 import AVFoundation
 
-class ProviderDelegate: NSObject {
+final class ProviderDelegate: NSObject {
     private let callManager: CallManager
     private let provider: CXProvider
     
@@ -47,6 +47,7 @@ class ProviderDelegate: NSObject {
             }
             complition?(err)
         }
+        //здесь устанавливается соединение с сервером для ответа на звонок
     }
     
    
@@ -63,6 +64,21 @@ extension ProviderDelegate: CXProviderDelegate {
         callManager.removeAllCall()
     }
     
+    func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
+        guard let call = callManager.callWithUUID(UUID: action.callUUID) else {
+            action.fail()
+            return
+        }
+        call.state = action.isOnHold ? .held : .active
+        
+        if call.state == .held {
+           stopAudio()
+        } else {
+            startAudio()
+        }
+        action.fulfill()
+    }
+    
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         guard let call = callManager.callWithUUID(UUID: action.callUUID) else {
             action.fail()
@@ -75,10 +91,6 @@ extension ProviderDelegate: CXProviderDelegate {
         action.fulfill()
         
        }
-    
-    func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
-        playAudio()
-    }
     
     func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         guard let call = callManager.callWithUUID(UUID: action.callUUID) else {
@@ -93,5 +105,41 @@ extension ProviderDelegate: CXProviderDelegate {
         
     }
     
+    func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
+        let call = Call.init(UUID: action.callUUID, outgoing: true, handle: action.handle.value)
+        configureAudioSession()
+        call.conectedStateChange = { [weak self, weak call] in
+            guard let self = self, let call = call else {return}
+            if call.conectedState == .pending {
+                self.provider.reportOutgoingCall(with: action.callUUID, startedConnectingAt: nil)
+            } else if call.conectedState == .complete {
+                self.provider.reportOutgoingCall(with: action.callUUID, connectedAt: nil)
+            }
+        }
+        
+        
+        call.start { [weak self, weak call] (succes) in
+            guard let self = self, let call = call else {return}
+            
+            if succes {
+                action.fulfill()
+                self.callManager.add(call: call)
+            } else {
+                action.fail()
+            }
+        }
+    }
+    
+    func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
+        
+    }
+    
+    //MARK: audioSession
+    func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
+        startAudio()
+    }
+    func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
+        stopAudio()
+    }
     
 }

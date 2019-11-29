@@ -42,11 +42,26 @@ class CallManager {
         callChangeHandler?()
     }
     
+    func setHeld(call: Call, onHold: Bool) {
+        let setHeldAction = CXSetHeldCallAction.init(call: call.UUID, onHold: onHold)
+        let transaction = CXTransaction.init(action: setHeldAction)
+        requestTransaction(transaction)
+    }
+    
     func end(call: Call) {
         let callAction = CXEndCallAction.init(call: call.UUID)
         let transaction = CXTransaction.init(action: callAction)
         requestTransaction(transaction)
     }
+    
+    func startCall(handle: String, videoEnabled: Bool) {
+        let hand = CXHandle.init(type: .phoneNumber, value: handle)
+        let startAction = CXStartCallAction.init(call: UUID(), handle: hand)
+        startAction.isVideo = videoEnabled
+        let transaction = CXTransaction.init(action: startAction)
+        requestTransaction(transaction)
+    }
+    
     
     private func requestTransaction(_ transaction: CXTransaction) {
         callController.request(transaction) { (err) in
