@@ -52,23 +52,24 @@ class ListViewController: UIViewController {
     
     @objc
     func add() {
-        let handle = "1234"
-        let videoEnable = false
-        let incoming = true
-        
-        if incoming {
-            let backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                AppDelegate.shared.displayIncommingCall(UUID: UUID(),
-                                                        handele: handle,
-                                                        hasVideo: videoEnable
-                ) { _ in
-                    UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
-                }
-            }
-        } else {
-            //print("outcall")
-        }
+//        let handle = "1234"
+//        let videoEnable = false
+//        let incoming = true
+//
+//        if incoming {
+//            let backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+//                AppDelegate.shared.displayIncommingCall(UUID: UUID(),
+//                                                        handele: handle,
+//                                                        hasVideo: videoEnable
+//                )
+//                { _ in
+//                    UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
+//                }
+//            }
+//        } else {
+//            //print("outcall")
+//        }
         
     }
 
